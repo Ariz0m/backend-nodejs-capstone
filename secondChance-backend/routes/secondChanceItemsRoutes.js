@@ -5,6 +5,13 @@ const fs = require('fs');
 const router = express.Router();
 const connectToDatabase = require('../models/db');
 const logger = require('../logger');
+const removeNulls = require('../utils/removeNulls');
+
+/**
+ * @typedef {import('../types/secondChanceItems.d.ts').SecondChanceItem} SecondChanceItem
+ * @typedef {import('mongodb').ObjectId} ObjectId
+ * @typedef {SecondChanceItem & { _id: ObjectId }} SecondChanceItemWithId
+*/
 
 // Define the upload directory path
 const directoryPath = 'public/images';
@@ -20,18 +27,15 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
+const collectionName = 'secondChanceItems';
+const db = await connectToDatabase();
+const collection = db.collection(collectionName);
 
 // Get all secondChanceItems
 router.get('/', async (req, res, next) => {
     logger.info('/ called');
     try {
-        //Step 2: task 1 - insert code here
-        //Step 2: task 2 - insert code here
-        //Step 2: task 3 - insert code here
-        //Step 2: task 4 - insert code here
-
-        const collection = db.collection("secondChanceItems");
+        /** @type SecondChanceItem[] */
         const secondChanceItems = await collection.find({}).toArray();
         res.json(secondChanceItems);
     } catch (e) {
@@ -41,15 +45,15 @@ router.get('/', async (req, res, next) => {
 });
 
 // Add a new item
-router.post('/', {Step 3: Task 6 insert code here}, async(req, res,next) => {
+router.post('/', async(req, res,next) => {
     try {
-
-        //Step 3: task 1 - insert code here
-        //Step 3: task 2 - insert code here
-        //Step 3: task 3 - insert code here
-        //Step 3: task 4 - insert code here
-        //Step 3: task 5 - insert code here
-        res.status(201).json(secondChanceItem.ops[0]);
+        /** @type SecondChanceItem */
+        const intendedItem = req.body;
+        const image = req.file ? req.file.filename : null;
+        intendedItem.image = image;
+        
+        const id = (await collection.insertOne(intendedItem));
+        res.status(201).json({message: 'Item added successfully', id});
     } catch (e) {
         next(e);
     }
@@ -58,10 +62,11 @@ router.post('/', {Step 3: Task 6 insert code here}, async(req, res,next) => {
 // Get a single secondChanceItem by ID
 router.get('/:id', async (req, res, next) => {
     try {
-        //Step 4: task 1 - insert code here
-        //Step 4: task 2 - insert code here
-        //Step 4: task 3 - insert code here
-        //Step 4: task 4 - insert code here
+        const { id } = req.params;
+        /** @type SecondChanceItemWithId */
+        const secondChanceItem = await collection.findOne({ id });
+        if (!secondChanceItem) throw new Error('Item not found');
+        res.json(secondChanceItem);
     } catch (e) {
         next(e);
     }
@@ -70,11 +75,18 @@ router.get('/:id', async (req, res, next) => {
 // Update and existing item
 router.put('/:id', async(req, res,next) => {
     try {
-        //Step 5: task 1 - insert code here
-        //Step 5: task 2 - insert code here
-        //Step 5: task 3 - insert code here
-        //Step 5: task 4 - insert code here
-        //Step 5: task 5 - insert code here
+        const { id } = req.params;
+        const newUpdate = req.body;
+        const image = req.file ? req.file.filename : null;
+
+
+        const updatedItem = await collection.findOneAndUpdate(
+            { id },
+            { $set: removeNulls({ ...newUpdate, image }) },
+            { returnOriginal: false }
+        );
+        if (!updatedItem) throw new Error('Item not found');
+        res.status(201).json({ message: 'Item updated successfully', updatedItem });
     } catch (e) {
         next(e);
     }
@@ -83,10 +95,10 @@ router.put('/:id', async(req, res,next) => {
 // Delete an existing item
 router.delete('/:id', async(req, res,next) => {
     try {
-        //Step 6: task 1 - insert code here
-        //Step 6: task 2 - insert code here
-        //Step 6: task 3 - insert code here
-        //Step 6: task 4 - insert code here
+        const { id } = req.params;
+        const deletedItem = await collection.findOneAndDelete({ id });
+        if (!deletedItem) throw new Error('Item not found');
+        res.json({ message: 'Item deleted successfully', deletedItem });
     } catch (e) {
         next(e);
     }

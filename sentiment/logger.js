@@ -1,5 +1,8 @@
 const pino = require('pino');
 
+/**
+ * @type {import('pino').Logger}
+ */
 let logger;
 
 if (process.env.NODE_ENV !== 'production') {
