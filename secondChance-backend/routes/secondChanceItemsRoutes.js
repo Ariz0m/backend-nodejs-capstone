@@ -5,7 +5,7 @@ const fs = require('fs');
 const router = express.Router();
 const connectToDatabase = require('../models/db');
 const logger = require('../logger');
-const removeNulls = require('../utils/removeNulls');
+const removeNulls = require('../util/removeNulls.js');
 
 /**
  * @typedef {import('../types/secondChanceItems.d.ts').SecondChanceItem} SecondChanceItem
@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 const collectionName = 'secondChanceItems';
 const db = await connectToDatabase();
 const collection = db.collection(collectionName);
@@ -93,7 +93,7 @@ router.put('/:id', async(req, res,next) => {
 });
 
 // Delete an existing item
-router.delete('/:id', async(req, res,next) => {
+router.delete('/:id', async(req, res, next) => {
     try {
         const { id } = req.params;
         const deletedItem = await collection.findOneAndDelete({ id });

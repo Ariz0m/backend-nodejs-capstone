@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const connectToDatabase = require('../models/db');
-const removeNulls = require('../utils/removeNulls');
+const removeNulls = require('../util/removeNulls');
 
 
 // Search for gifts

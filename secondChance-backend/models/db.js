@@ -1,6 +1,6 @@
 // db.js
 const process = require("process");
-const MongoClient = require('mongodb').MongoClient;
+const { MongoClient } = require('mongodb');
 process.loadEnvFile();
 // MongoDB connection URL with authentication options
 let url = `${process.env.MONGO_URL}`;
