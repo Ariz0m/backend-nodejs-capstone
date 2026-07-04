@@ -39,7 +39,7 @@ router.get('/', async (req, res, next) => {
         const secondChanceItems = await collection.find({}).toArray();
         res.json(secondChanceItems);
     } catch (e) {
-        logger.console.error('oops something went wrong', e)
+        logger.error('oops something went wrong', e)
         next(e);
     }
 });
@@ -52,7 +52,7 @@ router.post('/', async(req, res,next) => {
         const image = req.file ? req.file.filename : null;
         intendedItem.image = image;
         
-        const id = (await collection.insertOne(intendedItem));
+        const id = (await collection.insertOne(intendedItem)).insertedId.toString();
         res.status(201).json({message: 'Item added successfully', id});
     } catch (e) {
         next(e);

@@ -1,18 +1,18 @@
 /*jshint esversion: 8 */
-require('dotenv').config();
+const process = require("process");
 const express = require('express');
 const cors = require('cors');
 const pinoLogger = require('./logger');
 
 const connectToDatabase = require('./models/db');
-const {loadData} = require("./util/import-mongo/index");
+const { loadData } = require("./util/import-mongo/index");
 const secondChanceItemsRoutes = require('./routes/secondChanceItemsRoutes');
 const searchRoutes = require('./routes/searchRoutes');
 
-
+process.loadEnvFile();
 const app = express();
 app.use("*",cors());
-const port = 3060;
+const PORT = 3060;
 
 // Connect to MongoDB; we just do this one time
 connectToDatabase().then(() => {
@@ -30,7 +30,7 @@ app.use(express.json());
 
 
 
-const {pinoHttp} = require('pino-http');
+const { pinoHttp } = require('pino-http');
 const logger = require('./logger');
 
 app.use(pinoHttp({ logger }));
@@ -56,6 +56,6 @@ app.get("/",(req,res)=>{
     res.send("Inside the server")
 })
 
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });

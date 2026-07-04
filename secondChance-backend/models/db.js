@@ -1,7 +1,7 @@
 // db.js
-require('dotenv').config();
+const process = require("process");
 const MongoClient = require('mongodb').MongoClient;
-
+process.loadEnvFile();
 // MongoDB connection URL with authentication options
 let url = `${process.env.MONGO_URL}`;
 
