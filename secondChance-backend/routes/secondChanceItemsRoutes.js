@@ -28,12 +28,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 const collectionName = 'secondChanceItems';
-const db = connectToDatabase().then((dbInstance) => {
-  return dbInstance;
-}).catch((error) => {
-  logger.error('Failed to connect to the database', error);
-  throw error;
-});
+const db = await connectToDatabase();
 const collection = db.collection(collectionName);
 
 // Get all secondChanceItems
