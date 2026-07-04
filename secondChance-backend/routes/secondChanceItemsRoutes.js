@@ -28,20 +28,24 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 const collectionName = 'secondChanceItems';
-const db = connectToDatabase().then((dbInstance) => {
-  return dbInstance;
-}).catch((error) => {
-  logger.error('Failed to connect to the database', error);
-  throw error;
+// Create a promise for the database connection
+const dbPromise = connectToDatabase().catch((error) => {
+    logger.error('Failed to connect to the database', error);
+    throw error;
 });
-const collection = db.collection(collectionName);
+
+// Helper to get the collection inside each request (ensures fresh awaitable access)
+async function getCollection() {
+    const dbInstance = await dbPromise;
+    return dbInstance.collection(collectionName);
+}
 
 // Get all secondChanceItems
 router.get('/', async (req, res, next) => {
     logger.info('/ called');
     try {
         /** @type SecondChanceItem[] */
-        const secondChanceItems = await collection.find({}).toArray();
+        const secondChanceItems = (await getCollection()).find({}).toArray();
         res.json(secondChanceItems);
     } catch (e) {
         logger.error('oops something went wrong', e)
@@ -57,7 +61,7 @@ router.post('/', async(req, res,next) => {
         const image = req.file ? req.file.filename : null;
         intendedItem.image = image;
         
-        const id = (await collection.insertOne(intendedItem)).insertedId.toString();
+        const id = (await (await getCollection()).insertOne(intendedItem)).insertedId.toString();
         res.status(201).json({message: 'Item added successfully', id});
     } catch (e) {
         next(e);
@@ -69,7 +73,7 @@ router.get('/:id', async (req, res, next) => {
     try {
         const { id } = req.params;
         /** @type SecondChanceItemWithId */
-        const secondChanceItem = await collection.findOne({ id });
+        const secondChanceItem = await (await getCollection()).findOne({ id });
         if (!secondChanceItem) throw new Error('Item not found');
         res.json(secondChanceItem);
     } catch (e) {
@@ -85,7 +89,7 @@ router.put('/:id', async(req, res,next) => {
         const image = req.file ? req.file.filename : null;
 
 
-        const updatedItem = await collection.findOneAndUpdate(
+        const updatedItem = await (await getCollection()).findOneAndUpdate(
             { id },
             { $set: removeNulls({ ...newUpdate, image }) },
             { returnOriginal: false }
@@ -101,7 +105,7 @@ router.put('/:id', async(req, res,next) => {
 router.delete('/:id', async(req, res, next) => {
     try {
         const { id } = req.params;
-        const deletedItem = await collection.findOneAndDelete({ id });
+        const deletedItem = await (await getCollection()).findOneAndDelete({ id });
         if (!deletedItem) throw new Error('Item not found');
         res.json({ message: 'Item deleted successfully', deletedItem });
     } catch (e) {
