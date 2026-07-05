@@ -2,6 +2,11 @@ const router = require('express').Router();
 const connectToDatabase = require('../models/db');
 const removeNulls = require('../util/removeNulls');
 
+/**
+ * @typedef {import('../types/secondChanceItems.d.ts').SecondChanceItem} SecondChanceItem
+ * @typedef {import('mongodb').ObjectId} ObjectId
+ * @typedef {SecondChanceItem & { _id: ObjectId }} SecondChanceItemWithId
+*/
 
 // Search for gifts
 router.get('/', async (req, res, next) => {
@@ -19,7 +24,8 @@ router.get('/', async (req, res, next) => {
 
         if (req.query.age_years) query.age_years = { $lte: parseInt(req.query.age_years) };
 
-        // Task 4: Fetch filtered gifts using the find(query) method. Make sure to use await and store the result in the `gifts` constant
+        // Task 4: Fetch filtered gifts using the find(query) method. Make sure to use await and store the result in the `gifts` constant]
+        /** @type SecondChanceItemWithId[] */
         const gifts = await collection.find(query).toArray();
 
         res.json(gifts);
