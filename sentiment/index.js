@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
 const logger = require('./logger');
@@ -18,7 +17,7 @@ app.use(expressPino);
 app.post('/sentiment', async (req, res) => {
 
     // Task 4: extract the sentence parameter
-    const { sentence } = req.body;
+    const { sentence } = req.query;
 
 
     if (!sentence) {
@@ -37,7 +36,7 @@ app.post('/sentiment', async (req, res) => {
 
 
         // Task 5: set sentiment to negative or positive based on score rules
-        const sentiment = sentimentScore > 0 ? 'positive' : sentimentScore < 0 ? 'negative' : 'neutral';
+        const sentiment = sentimentScore < 0 ? 'negative' : sentimentScore > 0.33 ? 'positive' : 'neutral';
 
         // Logging the result
         logger.info(`Sentiment analysis result: ${sentimentScore}`);
