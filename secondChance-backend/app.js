@@ -2,7 +2,7 @@
 const process = require("process");
 const express = require('express');
 const cors = require('cors');
-const pinoLogger = require('./logger');
+const logger = require('./logger');
 
 const connectToDatabase = require('./models/db');
 const { loadData } = require("./util/import-mongo/index");
@@ -16,7 +16,7 @@ const PORT = 3060;
 
 // Connect to MongoDB; we just do this one time
 connectToDatabase().then(() => {
-    pinoLogger.info('Connected to DB');
+    logger.info('Connected to DB');
 })
     .catch((e) => console.error('Failed to connect to DB', e));
 
@@ -31,7 +31,6 @@ app.use(express.json());
 
 
 const { pinoHttp } = require('pino-http');
-const logger = require('./logger');
 
 app.use(pinoHttp({ logger }));
 
