@@ -6,6 +6,7 @@ const router = express.Router();
 const connectToDatabase = require('../models/db');
 const logger = require('../logger');
 const removeNulls = require('../util/removeNulls.js');
+const getCollection = require('../models/getCollection.js');
 
 /**
  * @typedef {import('../types/secondChanceItems.d.ts').SecondChanceItem} SecondChanceItem
@@ -28,17 +29,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 const collectionName = 'secondChanceItems';
-// Create a promise for the database connection
-const dbPromise = connectToDatabase().catch((error) => {
-    logger.error('Failed to connect to the database', error);
-    throw error;
-});
-
-// Helper to get the collection inside each request (ensures fresh awaitable access)
-async function getCollection() {
-    const dbInstance = await dbPromise;
-    return dbInstance.collection(collectionName);
-}
 
 // Get all secondChanceItems
 router.get('/', async (req, res, next) => {
