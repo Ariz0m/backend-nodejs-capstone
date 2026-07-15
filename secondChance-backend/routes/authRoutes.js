@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const connectToDatabase = require("../models/db");
+const getCollection = require("../models/getCollection.js");
 const logger = require("../logger");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -8,8 +8,7 @@ const { JWT_SECRET } = process.env;
 const USER_COLLECTION_NAME = "users";
 
 router.post("/register", async (req, res) => {
-    const db = await connectToDatabase();
-    const USER_COLLECTION = await db.collection(USER_COLLECTION_NAME);
+    const USER_COLLECTION = await getCollection(USER_COLLECTION_NAME);
 
     /**
     * @type {import('../types/user.d.ts').User}
@@ -55,6 +54,48 @@ router.post("/register", async (req, res) => {
 
     logger.info(`User ${email} registered successfully`);
     res.status(201).json({ email, authToken });
+});
+
+router.post("/login", async (req, res) => {
+    const USER_COLLECTION = await getCollection(USER_COLLECTION_NAME);
+    /**
+    * @type {import('../types/user.d.ts').User}
+    */
+    const body = req.body;
+    const { email, password } = body;
+
+    if (!email || !password) {
+        logger.error("Email or password was not provided in the request body");
+        return res.status(400).json({error: "Email and password are required"});
+    }
+
+    /**
+    * @type {import('../types/user.d.ts').UserWithId}
+    */
+    const { firstName, ...user } = await USER_COLLECTION.findOne({ email });
+
+    if (!user) {
+        logger.error(`User with email ${email} not found`);
+        return res.status(400).json({error: "Invalid credentials"});
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        logger.error(`Invalid password for user ${email}`);
+        return res.status(400).json({error: "Invalid credentials"});
+    }
+
+    const payload = {
+        user: {
+            id: user._id.toString()
+        }
+    };
+
+    const authToken = jwt.sign(payload, JWT_SECRET);
+
+    logger.info(`User ${email} logged in successfully`);
+    res.status(200).json({ email, authToken, firstName });
 });
 
 module.exports = router;
