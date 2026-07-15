@@ -2,6 +2,7 @@ const router = require("express").Router();
 const connectToDatabase = require("../models/db");
 const logger = require("../logger");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
 
 const USER_COLLECTION_NAME = "users";
