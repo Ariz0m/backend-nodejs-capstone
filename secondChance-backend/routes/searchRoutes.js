@@ -3,9 +3,7 @@ const connectToDatabase = require('../models/db');
 const removeNulls = require('../util/removeNulls');
 
 /**
- * @typedef {import('../types/secondChanceItems.d.ts').SecondChanceItem} SecondChanceItem
- * @typedef {import('mongodb').ObjectId} ObjectId
- * @typedef {SecondChanceItem & { _id: ObjectId }} SecondChanceItemWithId
+ * @typedef {import('../types/secondChanceItems.d.ts').SecondChanceItemWithId} SecondChanceItemWithId
 */
 
 // Search for gifts

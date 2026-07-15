@@ -18,7 +18,7 @@ const PORT = 3060;
 connectToDatabase().then(() => {
     logger.info('Connected to DB');
 })
-    .catch((e) => console.error('Failed to connect to DB', e));
+.catch((e) => console.error('Failed to connect to DB', e));
 
 
 app.use(express.json());
@@ -26,8 +26,7 @@ app.use(express.json());
 // Route files
 
 // authRoutes Step 2: import the authRoutes and store in a constant called authRoutes
-//{{insert code here}}
-
+const authRoutes = require('./routes/authRoutes');
 
 
 const { pinoHttp } = require('pino-http');
@@ -36,7 +35,7 @@ app.use(pinoHttp({ logger }));
 
 // Use Routes
 // authRoutes Step 2: add the authRoutes and to the server by using the app.use() method.
-//{{insert code here}}
+app.use("/api/auth", authRoutes);
 
 // Items API Task 2: add the secondChanceItemsRoutes to the server by using the app.use() method.
 app.use("/api/secondchance/items", secondChanceItemsRoutes);
