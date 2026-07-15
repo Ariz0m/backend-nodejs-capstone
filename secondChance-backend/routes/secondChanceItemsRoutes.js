@@ -34,8 +34,9 @@ const collectionName = 'secondChanceItems';
 router.get('/', async (req, res, next) => {
     logger.info('/ called');
     try {
+        const collection = await getCollection(collectionName);
         /** @type SecondChanceItem[] */
-        const secondChanceItems = (await getCollection()).find({}).toArray();
+        const secondChanceItems = await collection.find({}).toArray();
         res.json(secondChanceItems);
     } catch (e) {
         logger.error('oops something went wrong', e)
@@ -51,7 +52,8 @@ router.post('/', async(req, res,next) => {
         const image = req.file ? req.file.filename : null;
         intendedItem.image = image;
         
-        const id = (await (await getCollection()).insertOne(intendedItem)).insertedId.toString();
+        const collection = await getCollection(collectionName);
+        const id = await collection.insertOne(intendedItem).insertedId.toString();
         res.status(201).json({message: 'Item added successfully', id});
     } catch (e) {
         next(e);
@@ -62,8 +64,9 @@ router.post('/', async(req, res,next) => {
 router.get('/:id', async (req, res, next) => {
     try {
         const { id } = req.params;
+        const collection = await getCollection(collectionName);
         /** @type SecondChanceItemWithId */
-        const secondChanceItem = await (await getCollection()).findOne({ id });
+        const secondChanceItem = await collection.findOne({ id });
         if (!secondChanceItem) throw new Error('Item not found');
         res.json(secondChanceItem);
     } catch (e) {
@@ -77,9 +80,10 @@ router.put('/:id', async(req, res,next) => {
         const { id } = req.params;
         const newUpdate = req.body;
         const image = req.file ? req.file.filename : null;
+        
+        const collection = await getCollection(collectionName);
 
-
-        const updatedItem = await (await getCollection()).findOneAndUpdate(
+        const updatedItem = await collection.findOneAndUpdate(
             { id },
             { $set: removeNulls({ ...newUpdate, image }) },
             { returnOriginal: false }
@@ -95,7 +99,8 @@ router.put('/:id', async(req, res,next) => {
 router.delete('/:id', async(req, res, next) => {
     try {
         const { id } = req.params;
-        const deletedItem = await (await getCollection()).findOneAndDelete({ id });
+        const collection = await getCollection(collectionName);
+        const deletedItem = await collection.findOneAndDelete({ id });
         if (!deletedItem) throw new Error('Item not found');
         res.json({ message: 'Item deleted successfully', deletedItem });
     } catch (e) {
