@@ -6,8 +6,6 @@ export type User = {
     createdAt: Date;
 }
 
-/**
- * @typedef {import('mongodb').ObjectId} ObjectId
- */
+type ObjectId = import('mongodb').ObjectId;
 
 export type UserWithId = User & { _id: ObjectId };
