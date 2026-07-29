@@ -1,9 +1,11 @@
 const router = require("express").Router();
-const getCollection = require("../models/getCollection.js");
+const getCollection = require("../models/getCollection");
 const logger = require("../logger");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
+const removeNulls = require("../util/removeNulls");
+const { body ,validationResult } = require("express-validator")
 
 const USER_COLLECTION_NAME = "users";
 
@@ -41,7 +43,8 @@ router.post("/register", async (req, res) => {
         email,
         password: hash,
         firstName,
-        lastName
+        lastName,
+        createdAt: new Date()
     });
 
     const payload = {
@@ -96,6 +99,51 @@ router.post("/login", async (req, res) => {
 
     logger.info(`User ${email} logged in successfully`);
     res.status(200).json({ email, firstName: user.firstName, authToken });
+});
+
+router.put("/update", async (req, res) => {
+    const errors = validationResult(req);
+
+	if (!errors.isEmpty()) {
+        logger.error('Validation errors in update request', errors.array());
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email } = req.headers;
+
+    if (!email) {
+        logger.error('Email not found in the request headers');
+        return res.status(400).json({ error: "Email not found in the request headers" });
+	}
+
+	const USER_COLLECTION = await getCollection(USER_COLLECTION_NAME);
+
+    const existingUser = await USER_COLLECTION.findOne({ email });
+
+    if (!existingUser) {
+        logger.error('User not found');
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    existingUser.firstName = req.body.name;
+    existingUser.updatedAt = new Date();
+
+    const updatedUser = await USER_COLLECTION.updateOne(
+        { email },
+        { $set: existingUser },
+        { returnDocument: 'after' }
+    );
+
+    const payload = {
+        user: {
+            id: updatedUser._id.toString(),
+        },
+    };
+
+    const authtoken = jwt.sign(payload, JWT_SECRET);
+    logger.info('User updated successfully');
+
+    res.status(200).json({ authtoken });
 });
 
 module.exports = router;
