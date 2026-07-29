@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
 const removeNulls = require("../util/removeNulls");
+const requireString = require("../util/requireString");
 const { body ,validationResult } = require("express-validator")
 
 const USER_COLLECTION_NAME = "users";
@@ -125,7 +126,7 @@ router.put("/update", async (req, res) => {
         return res.status(404).json({ error: "User not found" });
     }
 
-    existingUser.firstName = req.body.name;
+    existingUser.firstName = requireString(req.body.firstName);
     existingUser.updatedAt = new Date();
 
     const updatedUser = await USER_COLLECTION.updateOne(
@@ -136,14 +137,14 @@ router.put("/update", async (req, res) => {
 
     const payload = {
         user: {
-            id: updatedUser._id.toString(),
+            id: existingUser._id.toString(),
         },
     };
 
     const authtoken = jwt.sign(payload, JWT_SECRET);
     logger.info('User updated successfully');
 
-    res.status(200).json({ authtoken });
+    res.status(200).json({ userName: existingUser.firstName, userEmail: existingUser.email, authtoken });
 });
 
 module.exports = router;
