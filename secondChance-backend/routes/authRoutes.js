@@ -72,12 +72,12 @@ router.post("/login", async (req, res) => {
     /**
     * @type {import('../types/user.d.ts').UserWithId}
     */
-    const { firstName, ...user } = await USER_COLLECTION.findOne({ email });
-
+    const user = await USER_COLLECTION.findOne({ email });
     if (!user) {
         logger.error(`User with email ${email} not found`);
         return res.status(400).json({error: "Invalid credentials"});
     }
+
 
     const isMatch = await bcrypt.compare(password, user.password);
 
@@ -95,7 +95,7 @@ router.post("/login", async (req, res) => {
     const authToken = jwt.sign(payload, JWT_SECRET);
 
     logger.info(`User ${email} logged in successfully`);
-    res.status(200).json({ email, firstName, authToken });
+    res.status(200).json({ email, firstName: user.firstName, authToken });
 });
 
 module.exports = router;
