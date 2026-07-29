@@ -3,7 +3,8 @@ export type User = {
     firstName: string;
     lastName: string;
     password: string;
-    createdAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 type ObjectId = import('mongodb').ObjectId;
