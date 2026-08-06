@@ -11,7 +11,7 @@ let url = `${process.env.MONGO_URL}`;
 let dbInstance;
 const dbName = `${process.env.MONGO_DB}`;
 
-async function connectToDatabase() {
+module.exports = async function connectToDatabase() {
     if (dbInstance){
         return dbInstance
     };
@@ -26,6 +26,4 @@ async function connectToDatabase() {
 
     // Task 3: Return database instance
     return dbInstance;
-}
-
-module.exports = connectToDatabase;
+};

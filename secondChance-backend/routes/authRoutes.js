@@ -8,13 +8,18 @@ const removeNulls = require("../util/removeNulls");
 const requireString = require("../util/requireString");
 const { body ,validationResult } = require("express-validator")
 
+/**
+ * @typedef {import('../types/user.d.ts').User} User
+ * @typedef {import('../types/user.d.ts').UserWithId} UserWithId
+ */
+
 const USER_COLLECTION_NAME = "users";
 
 router.post("/register", async (req, res) => {
     const USER_COLLECTION = await getCollection(USER_COLLECTION_NAME);
 
     /**
-    * @type {import('../types/user.d.ts').User}
+    * @type User
     */
     const body = req.body;
     const { email, password, firstName, lastName } = body;
@@ -50,7 +55,7 @@ router.post("/register", async (req, res) => {
 
     const payload = {
        user: {
-           id: newUser.insertedId
+        id: newUser.insertedId
        } 
     }
 
@@ -63,7 +68,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
     const USER_COLLECTION = await getCollection(USER_COLLECTION_NAME);
     /**
-    * @type {import('../types/user.d.ts').User}
+    * @type User
     */
     const body = req.body;
     const { email, password } = body;
@@ -74,7 +79,7 @@ router.post("/login", async (req, res) => {
     }
 
     /**
-    * @type {import('../types/user.d.ts').UserWithId}
+    * @type UserWithId
     */
     const user = await USER_COLLECTION.findOne({ email });
     if (!user) {

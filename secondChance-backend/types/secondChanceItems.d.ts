@@ -12,10 +12,11 @@ export type SecondChanceItem = {
     image: string;
     comments: SecondChanceComment[]
 }
-type ObjectId = import("mongodb").ObjectId;
-export type SecondChanceItemWithId = SecondChanceItem & { _id: ObjectId };
 
 type SecondChanceComment = {
     author: string;
     comment: string;
 }
+
+import { ObjectId } from "mongodb";
+export type SecondChanceItemWithId = SecondChanceItem & { _id: ObjectId };
