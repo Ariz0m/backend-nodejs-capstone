@@ -45,16 +45,24 @@ router.get('/', async (req, res, next) => {
 });
 
 // Add a new item
-router.post('/', async(req, res,next) => {
+router.post('/', upload.single('file'), async(req, res,next) => {
     try {
-        /** @type SecondChanceItem */
-        const intendedItem = req.body;
-        const image = req.file ? req.file.filename : null;
-        intendedItem.image = image;
-        
         const collection = await getCollection(collectionName);
-        const id = await collection.insertOne(intendedItem).insertedId.toString();
-        res.status(201).json({message: 'Item added successfully', id});
+        const lastItemQuery = collection.find().sort({'id': -1}).limit(1);
+        /**
+         * @type {SecondChanceItem}
+         */
+        let secondChanceItem = req.body;
+
+        for await (const item of lastItemQuery) {
+            secondChanceItem.id = (parseInt(item.id) + 1).toString();
+        }
+        const date_added = Math.floor(new Date().getTime() / 1000);
+        secondChanceItem.date_added = date_added
+
+        secondChanceItem = await collection.insertOne(secondChanceItem);
+        console.log(secondChanceItem);
+        res.status(201).json(secondChanceItem);
     } catch (e) {
         next(e);
     }
