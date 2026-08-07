@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { urlConfig } from "../../config"
 import { useAppContext } from '../../context/AppContext';
+import { formatDate } from "../../utils/formatDate"
 
 import './DetailsPage.css';
 
@@ -68,7 +69,7 @@ function DetailsPage() {
                     {/* Product details */}
                     <p><strong>Category:</strong> {gift.category}</p>
                     <p><strong>Condition:</strong> {gift.condition}</p>
-                    <p><strong>Date Added:</strong> {gift.date_added}</p>
+                    <p><strong>Date Added:</strong> {formatDate(gift.date_added)}</p>
                     <p><strong>Age (Years):</strong> {gift.age_years}</p>
                     <p><strong>Description:</strong> {gift.description}</p>
                 </div>

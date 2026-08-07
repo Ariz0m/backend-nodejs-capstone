@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {urlConfig} from '../../config';
 import { useAppContext } from '../../context/AppContext';
+import { formatDate } from "../../utils/formatDate"
 
 function MainPage() {
     const [items, setItems] = useState([])
@@ -38,11 +39,6 @@ function MainPage() {
 
     const handleAddItem = () => {
         navigate(`/app/addItem`);
-    };
-
-    const formatDate = (timestamp) => {
-        const date = new Date(timestamp * 1000);
-        return date.toLocaleString('default', { month: 'long', day: 'numeric', year: 'numeric' });
     };
 
     const getConditionClass = (condition) => {
