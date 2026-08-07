@@ -38,8 +38,8 @@ function LoginPage() {
         console.log('Json',json);
         if (json.authToken) {
           sessionStorage.setItem('auth-token', json.authToken);
-          sessionStorage.setItem('name', json.userName);
-          sessionStorage.setItem('email', json.userEmail);
+          sessionStorage.setItem('name', json.firstName);
+          sessionStorage.setItem('email', json.email);
 
           navigate('/app');
           setIsLoggedIn(true);

@@ -28,13 +28,13 @@ const Profile = () => {
       const name=sessionStorage.getItem('name');
       if (name || authtoken) {
                 const storedUserDetails = {
-                  name: name,
-                  email:email
+                  firstName: name,
+                  email
                 };
         
                 setUserDetails(storedUserDetails);
                 setUpdatedDetails(storedUserDetails);
-              }
+    }
 } catch (error) {
   console.error(error);
   // Handle error case
@@ -124,7 +124,7 @@ return (
 </form>
 ) : (
 <div className="profile-details">
-<h1>Hi, {userDetails.name}</h1>
+<h1>Hi, {userDetails.firstName}</h1>
 <p> <b>Email:</b> {userDetails.email}</p>
 <button onClick={handleEdit}>Edit</button>
 <span style={{color:'green',height:'.5cm',display:'block',fontStyle:'italic',fontSize:'12px'}}>{changed}</span>
