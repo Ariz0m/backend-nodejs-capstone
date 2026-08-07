@@ -3,7 +3,7 @@ const process = require("process");
 const express = require('express');
 const cors = require('cors');
 const logger = require('./logger');
-const path = require('path');
+const { join } = require('path');
 
 const connectToDatabase = require('./models/db');
 const { loadData } = require("./util/import-mongo/index");
@@ -16,7 +16,7 @@ app.use("*",cors());
 const PORT = 3060;
 
 
-app.use("/images", express.static(path.join(__dirname, "public","images")));
+app.use("/images", express.static(join(__dirname, "public","images")));
 
 // Connect to MongoDB; we just do this one time
 connectToDatabase().then(() => {
