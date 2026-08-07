@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {urlConfig} from '../../config';
 import { useAppContext } from '../../context/AppContext';
@@ -7,10 +7,13 @@ function MainPage() {
     const [items, setItems] = useState([])
     const navigate = useNavigate();
     const { isLoggedIn } = useAppContext();
-
+    const didFetchRef = useRef(false);
 
     useEffect(() => {
         // fetch all items
+        if (didFetchRef.current) return;
+        didFetchRef.current = true;
+
         const fetchItems = async () => {
             try {
                 let url = `${urlConfig.backendUrl}/api/secondchance/items`
