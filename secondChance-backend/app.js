@@ -42,14 +42,13 @@ app.use('/api/secondchance/items', secondChanceItemsRoutes)
 // Search API Task 2: add the searchRoutes to the server by using the app.use() method.
 app.use('/api/secondchance/search', searchRoutes)
 
-
 // Global Error Handler
 app.use((err, req, res, next) => {
   console.error(err)
   res.status(500).send('Internal Server Error')
 })
 
-app.get('/', (req,res) => {
+app.get('/', (req, res) => {
   res.send('Inside the server')
 })
 
