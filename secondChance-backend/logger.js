@@ -8,7 +8,7 @@ if (process.env.NODE_ENV !== 'production') {
 logger = pino({ 
 level: 'debug',
 transport: { 
-target:'pino-pretty ',
+target: 'pino-pretty',
   },
   })
   } else { 
